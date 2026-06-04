@@ -1,0 +1,20 @@
+# ==============================================================================
+# ANTIGRAVITY IDE NOTEBOOK CONFIGURATION CELL (MCP MANIFEST)
+# ==============================================================================
+[notebook.metadata]
+id = "ef-cmd-generator-mcp"
+title = "Entity Framework Universal Core/6 CLI Automation Center Generator"
+version = "2026.2.0"
+runtime = "node-vite-react-ts"
+description = "Spawns a saved-state react engine managing multi-project startup contexts and parameters"
+
+[[notebook.permissions]]
+type = "filesystem"
+allow = ["write", "create", "execute"]
+paths = ["./ef-command-center/**"]
+
+[[notebook.ports]]
+container = 5173
+host = 5173
+protocol = "http"
+# ==============================================================================
