@@ -24,35 +24,35 @@ A modern, highly aesthetic, and premium React web application to generate Entity
 
 ---
 
-## 🛠️ How to Use the Site
+## 🛠️ How to Use the Site to Add Projects & Create Command Lines
 
-### 1. Manage Profiles
-The left sidebar is your control center for different project environments.
-- **Create a Profile:** Click the `+` button in the **Profiles** section to scaffold a new setup.
-- **Switch Profiles:** Click on any profile in the list to load its configurations. 
-- **Rename Profile:** Click on the large profile name at the top of the screen to edit it directly.
-- **Clone / Delete:** Use the **Clone Profile** button at the top, or hover over a profile in the sidebar to reveal the **Trash (Delete)** button.
+### 1. Add Your Projects (Manage Profiles)
+The left sidebar is your control center for different project environments. You can easily add your projects as profiles:
+- **Add a Project / Create Profile:** Click the `+` button in the **Profiles** section to add a new project setup.
+- **Switch Projects:** Click on any profile in the list to load its configurations. 
+- **Rename Project:** Click on the large profile name at the top of the screen to edit it directly and match your actual project name.
+- **Clone / Delete:** Use the **Clone Profile** button at the top, or hover over a project in the sidebar to reveal the **Trash (Delete)** button.
 
 ### 2. Choose Your EF Version
 Toggle between **EF Core (CLI)** and **EF6 (PMC)** using the glowing segmented control in the top header. The command templates will instantly transform based on your selection:
 - **EF Core:** Generates `dotnet ef ...` commands.
 - **EF6:** Generates Package Manager Console commands like `Add-Migration ...`.
 
-### 3. Configure Parameters
-In the **Configuration Parameters** section, fill in the details of your project:
+### 3. Easily Create Command Lines (Configure Parameters)
+In the **Configuration Parameters** section, fill in the details of your project to easily generate the right command lines:
 - **Startup Project:** The entry-point project (e.g., `MyApi.csproj`).
 - **Target Project:** The project where your DbContext and Migrations live (e.g., `Infrastructure.csproj`).
 - **DbContext Name:** The name of your DbContext class (e.g., `ApplicationDbContext`).
 - **Migration Name:** The name for your next migration (e.g., `InitialCreate`).
 - **Extra Flags:** Any custom parameters you wish to append (e.g., `--verbose` or `-Force`).
 
-*As you type, the generated commands on the right will update in real-time.*
+*As you type, the generated command lines on the right will update in real-time, making it effortless to build the exact command you need.*
 
-### 4. Copy Commands
+### 4. Copy Your Command Lines
 The **Generated Commands** panel provides a live, terminal-style preview of the exact commands you need.
 - Click the **Copy** button on any command card.
 - A visual "Copied!" confirmation will appear.
-- Paste the command into your terminal or Package Manager Console.
+- Paste the command line directly into your terminal or Package Manager Console.
 
 ### 5. Import and Export Configurations
 Need to share your setups with your team or back them up?
