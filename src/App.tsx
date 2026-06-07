@@ -149,9 +149,7 @@ function App() {
       {/* Sidebar */}
       <aside className="w-72 glass-panel border-r border-white/5 flex flex-col z-10 shrink-0">
         <div className="p-5 border-b border-white/5 flex items-center gap-3">
-          <div className="p-2.5 bg-primary-500/20 rounded-xl text-primary-400 border border-primary-500/20">
-            <Database size={24} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-          </div>
+          <img src="/logo.svg" className="w-10 h-10 rounded-xl shadow-[0_0_12px_rgba(99,102,241,0.35)] border border-white/10" alt="EF Generator Logo" />
           <div>
             <h1 className="font-semibold text-lg text-glow tracking-tight text-white">EF Generator</h1>
             <p className="text-xs text-slate-400 font-medium">Command Toolkit</p>
