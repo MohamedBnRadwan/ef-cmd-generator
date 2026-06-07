@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import logo from './assets/logo.svg';
 import { type ProjectProfile, defaultProfile } from './types';
 import { 
   Database, Play, Plus, Trash2, Copy, Check, Download, Upload, 
@@ -149,7 +150,7 @@ function App() {
       {/* Sidebar */}
       <aside className="w-72 glass-panel border-r border-white/5 flex flex-col z-10 shrink-0">
         <div className="p-5 border-b border-white/5 flex items-center gap-3">
-          <img src="/logo.svg" className="w-10 h-10 rounded-xl shadow-[0_0_12px_rgba(99,102,241,0.35)] border border-white/10" alt="EF Generator Logo" />
+          <img src={logo} className="w-10 h-10 rounded-xl shadow-[0_0_12px_rgba(99,102,241,0.35)] border border-white/10" alt="EF Generator Logo" />
           <div>
             <h1 className="font-semibold text-lg text-glow tracking-tight text-white">EF Generator</h1>
             <p className="text-xs text-slate-400 font-medium">Command Toolkit</p>
