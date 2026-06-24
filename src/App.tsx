@@ -3,7 +3,7 @@ import logo from './assets/logo.svg';
 import { type ProjectProfile, defaultProfile } from './types';
 import { 
   Database, Play, Plus, Trash2, Copy, Check, Download, Upload, 
-  Settings, Folder, Code2, Tag, Command, Box
+  Settings, Folder, Code2, Tag, Command, Box, Pencil
 } from 'lucide-react';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -13,7 +13,13 @@ function App() {
     const saved = localStorage.getItem('ef-profiles');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved) as ProjectProfile[];
+        return parsed.map(p => ({
+          ...p,
+          dbContexts: p.dbContexts && p.dbContexts.length > 0
+            ? p.dbContexts
+            : (p.dbContext ? [p.dbContext] : ['ApplicationDbContext'])
+        }));
       } catch (e) {
         return [defaultProfile];
       }
@@ -24,6 +30,8 @@ function App() {
   const [activeProfileId, setActiveProfileId] = useState<string>(profiles[0]?.id || 'default');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editingContextIndex, setEditingContextIndex] = useState<number | null>(null);
+  const [editingContextValue, setEditingContextValue] = useState<string>('');
 
   useEffect(() => {
     localStorage.setItem('ef-profiles', JSON.stringify(profiles));
@@ -33,6 +41,61 @@ function App() {
 
   const updateProfile = (updates: Partial<ProjectProfile>) => {
     setProfiles(profiles.map(p => p.id === activeProfileId ? { ...p, ...updates } : p));
+  };
+
+  const handleAddDbContext = () => {
+    const currentContexts = activeProfile.dbContexts || [];
+    const baseName = 'NewDbContext';
+    let newName = baseName;
+    let counter = 1;
+    while (currentContexts.includes(newName)) {
+      newName = `${baseName}${counter}`;
+      counter++;
+    }
+    const updatedContexts = [...currentContexts, newName];
+    updateProfile({
+      dbContexts: updatedContexts,
+      dbContext: newName
+    });
+  };
+
+  const handleDeleteDbContext = (contextName: string) => {
+    const currentContexts = activeProfile.dbContexts || [];
+    if (currentContexts.length <= 1) return;
+    const updatedContexts = currentContexts.filter(c => c !== contextName);
+    const nextActive = activeProfile.dbContext === contextName
+      ? (updatedContexts[0] || '')
+      : activeProfile.dbContext;
+    updateProfile({
+      dbContexts: updatedContexts,
+      dbContext: nextActive
+    });
+  };
+
+  const handleStartRenameDbContext = (index: number, name: string) => {
+    setEditingContextIndex(index);
+    setEditingContextValue(name);
+  };
+
+  const handleSaveRenameDbContext = (index: number) => {
+    if (editingContextIndex === null) return;
+    const nameToSave = editingContextValue.trim();
+    if (!nameToSave) {
+      setEditingContextIndex(null);
+      return;
+    }
+    const currentContexts = activeProfile.dbContexts || [];
+    const exists = currentContexts.some((c, idx) => idx !== index && c === nameToSave);
+    const finalName = exists ? `${nameToSave}_${index + 1}` : nameToSave;
+    const updatedContexts = currentContexts.map((c, idx) => idx === index ? finalName : c);
+    const nextActive = activeProfile.dbContext === currentContexts[index]
+      ? finalName
+      : activeProfile.dbContext;
+    updateProfile({
+      dbContexts: updatedContexts,
+      dbContext: nextActive
+    });
+    setEditingContextIndex(null);
   };
 
   const createProfile = () => {
@@ -74,8 +137,14 @@ function App() {
       try {
         const imported = JSON.parse(event.target?.result as string);
         if (Array.isArray(imported) && imported.length > 0 && imported[0].id) {
-          setProfiles(imported);
-          setActiveProfileId(imported[0].id);
+          const migrated = imported.map((p: any) => ({
+            ...p,
+            dbContexts: p.dbContexts && p.dbContexts.length > 0
+              ? p.dbContexts
+              : (p.dbContext ? [p.dbContext] : ['ApplicationDbContext'])
+          }));
+          setProfiles(migrated);
+          setActiveProfileId(migrated[0].id);
         } else {
           alert('Invalid profile format');
         }
@@ -268,17 +337,87 @@ function App() {
                     />
                   </div>
 
-                  <div className="group">
-                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2 group-focus-within:text-primary-400 transition-colors">
-                      <Database size={14} /> DbContext Name
-                    </label>
-                    <input 
-                      type="text" 
-                      className="glass-input w-full shadow-inner"
-                      value={activeProfile.dbContext}
-                      onChange={(e) => updateProfile({ dbContext: e.target.value })}
-                      placeholder="e.g. ApplicationDbContext"
-                    />
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center gap-2 text-xs font-semibold text-slate-400 group-focus-within:text-primary-400 transition-colors">
+                        <Database size={14} /> DbContext Names
+                      </label>
+                      <button 
+                        onClick={handleAddDbContext}
+                        type="button"
+                        className="text-[11px] bg-primary-500/20 hover:bg-primary-500 text-primary-300 hover:text-white border border-primary-500/30 px-2 py-0.5 rounded-lg transition-all duration-200"
+                        title="Add DbContext"
+                      >
+                        + Add
+                      </button>
+                    </div>
+
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                      {(activeProfile.dbContexts || [activeProfile.dbContext]).map((ctx, idx) => (
+                        <div 
+                          key={idx}
+                          className={`group/item flex items-center gap-2.5 p-2 rounded-lg border transition-all duration-200 ${
+                            activeProfile.dbContext === ctx 
+                              ? 'bg-primary-500/10 border-primary-500/30 text-white shadow-[0_0_10px_rgba(99,102,241,0.05)]' 
+                              : 'bg-dark-900/30 border-white/5 text-slate-400 hover:bg-dark-900/60 hover:text-slate-200'
+                          }`}
+                        >
+                          <input 
+                            type="radio"
+                            name={`activeDbContext-${activeProfile.id}`}
+                            checked={activeProfile.dbContext === ctx}
+                            onChange={() => updateProfile({ dbContext: ctx })}
+                            className="w-3.5 h-3.5 text-primary-500 bg-dark-900 border-white/10 focus:ring-primary-500 focus:ring-offset-dark-900 focus:ring-2 cursor-pointer"
+                          />
+                          {editingContextIndex === idx ? (
+                            <input 
+                              type="text"
+                              value={editingContextValue}
+                              onChange={(e) => setEditingContextValue(e.target.value)}
+                              onBlur={() => handleSaveRenameDbContext(idx)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveRenameDbContext(idx);
+                                if (e.key === 'Escape') setEditingContextIndex(null);
+                              }}
+                              autoFocus
+                              className="flex-grow bg-dark-900/80 border border-primary-500/40 rounded px-1.5 py-0.5 text-xs text-white outline-none"
+                            />
+                          ) : (
+                            <span 
+                              className="flex-grow text-xs font-medium truncate cursor-pointer select-none"
+                              onClick={() => updateProfile({ dbContext: ctx })}
+                              onDoubleClick={() => handleStartRenameDbContext(idx, ctx)}
+                              title="Double click to rename, click to select"
+                            >
+                              {ctx}
+                            </span>
+                          )}
+
+                          <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                            {editingContextIndex !== idx && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleStartRenameDbContext(idx, ctx); }}
+                                type="button"
+                                className="p-1 hover:bg-white/5 rounded text-slate-400 hover:text-white"
+                                title="Rename DbContext"
+                              >
+                                <Pencil size={11} />
+                              </button>
+                            )}
+                            {(activeProfile.dbContexts || []).length > 1 && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleDeleteDbContext(ctx); }}
+                                type="button"
+                                className="p-1 hover:bg-red-500/20 rounded text-slate-400 hover:text-red-400"
+                                title="Remove DbContext"
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="group">

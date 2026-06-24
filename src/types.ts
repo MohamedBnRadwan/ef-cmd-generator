@@ -5,6 +5,7 @@ export interface ProjectProfile {
   startupProject: string;
   targetProject: string;
   dbContext: string;
+  dbContexts: string[];
   migrationName: string;
   extraFlags: string;
 }
@@ -16,6 +17,7 @@ export const defaultProfile: ProjectProfile = {
   startupProject: 'MyApi.csproj',
   targetProject: 'MyInfrastructure.csproj',
   dbContext: 'ApplicationDbContext',
+  dbContexts: ['ApplicationDbContext'],
   migrationName: 'InitialCreate',
   extraFlags: '',
 };
